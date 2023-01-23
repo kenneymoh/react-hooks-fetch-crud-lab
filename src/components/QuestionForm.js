@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 function QuestionForm(props) {
   const [formData, setFormData] = useState({
     prompt: "",
@@ -10,17 +9,42 @@ function QuestionForm(props) {
     correctIndex: 0,
   });
 
-  function handleChange(event) {
+  const sendData = {
+    prompt: '', 
+    answers: [], 
+    correctIndex: ''
+  }
+
+  sendData.prompt = formData.prompt
+
+  sendData.answers.push(formData.answer1, formData.answer2, formData.answer3, formData.answer4)
+  sendData.correctIndex = formData.correctIndex; 
+
+  function handleChange(e) {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function handleSubmit(e) {
+    e.preventDefault();
     console.log(formData);
-  }
+  
+
+  fetch(props.API, {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json', 
+    }, 
+    body: JSON.stringify(sendData), 
+  })
+  .then(response => response.json())
+  .then((data) => {
+    const updatedQuestions = [...props.questions, data]
+    props.setQuestions(() => updatedQuestions); 
+  })
+}
 
   return (
     <section>
